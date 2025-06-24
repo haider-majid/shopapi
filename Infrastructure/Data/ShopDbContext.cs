@@ -11,6 +11,7 @@ namespace Infrastructure
         public DbSet<Category> Categories => Set<Category>();
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            // Product config
             modelBuilder.Entity<Product>(entity =>
             {
                 entity.HasKey(e => e.Id);
@@ -21,7 +22,23 @@ namespace Infrastructure
                 entity.Property(e => e.Description).HasMaxLength(500);
                 entity.Property(e => e.Price).HasColumnType("decimal(18,2)");
                 entity.Property(e => e.Stock).IsRequired();
+
+                entity.HasOne(e => e.Category)
+                    .WithMany(c => c.Products)
+                    .HasForeignKey(e => e.CategoryId)
+                    .OnDelete(DeleteBehavior.Cascade);
+            });
+
+            // Category config (optional but recommended)
+            modelBuilder.Entity<Category>(entity =>
+            {
+                entity.HasKey(e => e.Id);
+                entity.Property(e => e.Id)
+                    .HasDefaultValueSql("gen_random_uuid()")
+                    .ValueGeneratedOnAdd();
+                entity.Property(e => e.Name).IsRequired().HasMaxLength(100);
             });
         }
+
     }
 }
