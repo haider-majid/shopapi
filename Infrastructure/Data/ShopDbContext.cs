@@ -29,6 +29,5 @@ namespace Infrastructure
                     .OnDelete(DeleteBehavior.Cascade);
             });
         }
-
     }
 }

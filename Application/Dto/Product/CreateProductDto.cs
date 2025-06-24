@@ -9,7 +9,6 @@ namespace Application
 
         //foreign key
         public Guid CategoryId { get; set; }
-        
 
     }
 }
