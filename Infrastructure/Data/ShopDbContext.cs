@@ -28,16 +28,6 @@ namespace Infrastructure
                     .HasForeignKey(e => e.CategoryId)
                     .OnDelete(DeleteBehavior.Cascade);
             });
-
-            // Category config (optional but recommended)
-            modelBuilder.Entity<Category>(entity =>
-            {
-                entity.HasKey(e => e.Id);
-                entity.Property(e => e.Id)
-                    .HasDefaultValueSql("gen_random_uuid()")
-                    .ValueGeneratedOnAdd();
-                entity.Property(e => e.Name).IsRequired().HasMaxLength(100);
-            });
         }
 
     }
