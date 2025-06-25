@@ -1,4 +1,5 @@
 using Application;
+using Presentation.Dto.Profile;
 
 namespace Application.Services
 {
@@ -8,5 +9,8 @@ namespace Application.Services
         Task ValidateAsync(UpdateCategoryDto dto);
         Task ValidateAsync(CreateProductDto dto);
         Task ValidateAsync(UpdateProductDto dto);
+        Task ValidateAsync(CreateAccountDto dto);
+        Task ValidateAsync(UpdateAccountDto dto);
     }
 }
+

@@ -9,6 +9,8 @@ namespace Infrastructure
 
         public DbSet<Product> Products => Set<Product>();
         public DbSet<Category> Categories => Set<Category>();
+        public DbSet<Account> Accounts => Set<Account>();
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             // Product config

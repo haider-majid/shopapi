@@ -7,7 +7,7 @@ namespace Application
     {
         public ProductProfile()
         {
-            
+
             CreateMap<CreateProductDto, Product>();
             CreateMap<Product, GetProductDto>();
             CreateMap<UpdateProductDto, Product>();
