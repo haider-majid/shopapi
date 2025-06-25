@@ -3,75 +3,77 @@ using Domain;
 using Application;
 using AutoMapper;
 using FluentValidation;
+using Application.Services;
 
-namespace API
+namespace API.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class ProductsController : ControllerBase
+    public class ProductsController : BaseController
     {
-        private readonly IProductRepository _repository;
-        private readonly IMapper _mapper;
-        private readonly IValidator<CreateProductDto> _createValidator;
-        private readonly IValidator<UpdateProductDto> _updateValidator;
+        private readonly IProductService _productService;
 
-        public ProductsController(IProductRepository repository, IMapper mapper, IValidator<CreateProductDto> validator, IValidator<CreateProductDto> createValidator, IValidator<UpdateProductDto> updateValidator)
+        public ProductsController(IMapper mapper, IProductService productService) : base(mapper)
         {
-            _repository = repository;
-            _mapper = mapper;
-            _createValidator = createValidator;
-            _updateValidator = updateValidator;
+            _productService = productService;
         }
 
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            var products = await _repository.GetAllAsync();
-            return Ok(_mapper.Map<IEnumerable<GetProductDto>>(products));
+            var products = await _productService.GetAllAsync();
+            return Ok(products);
         }
 
         [HttpGet("{id}")]
         public async Task<IActionResult> Get(Guid id)
         {
-            var product = await _repository.GetByIdAsync(id);
+            var product = await _productService.GetByIdAsync(id);
             if (product == null) return NotFound();
-            return Ok(_mapper.Map<GetProductDto>(product));
+            return Ok(product);
         }
 
         [HttpPost]
         public async Task<IActionResult> Create(CreateProductDto dto)
         {
-            var validation = await _createValidator.ValidateAsync(dto);
-            if (!validation.IsValid)
-                return BadRequest(validation.Errors);
-            var product = _mapper.Map<Product>(dto);
-            if (product.Id == Guid.Empty)
-                product.Id = Guid.NewGuid();
-            var created = await _repository.AddAsync(product);
-            return CreatedAtAction(nameof(Get), new { id = created.Id }, _mapper.Map<GetProductDto>(created));
+            try
+            {
+                var createdProduct = await _productService.CreateAsync(dto);
+                return CreatedAtAction(nameof(Get), new { id = createdProduct.Id }, createdProduct);
+            }
+            catch (ValidationException ex)
+            {
+                return BadRequest(ex.Errors);
+            }
         }
 
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(Guid id, UpdateProductDto dto)
         {
-            if (id != dto.Id) return BadRequest();
-            var validation = await _updateValidator.ValidateAsync(dto);
-            if (!validation.IsValid)
-                return BadRequest(validation.Errors);
-            var product = await _repository.GetByIdAsync(id);
-            if (product == null) return NotFound();
-            _mapper.Map(dto, product);
-            await _repository.UpdateAsync(product);
-            return NoContent();
+            try
+            {
+                var success = await _productService.UpdateAsync(id, dto);
+                if (success)
+                    return NoContent();
+                return NotFound();
+            }
+            catch (ValidationException ex)
+            {
+                return BadRequest(ex.Errors);
+            }
+            catch (ArgumentException)
+            {
+                return BadRequest("ID mismatch");
+            }
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(Guid id)
         {
-            var product = await _repository.GetByIdAsync(id);
-            if (product == null) return NotFound();
-            await _repository.DeleteAsync(id);
-            return NoContent();
+            var success = await _productService.DeleteAsync(id);
+            if (success)
+                return NoContent();
+            return NotFound();
         }
     }
 }
