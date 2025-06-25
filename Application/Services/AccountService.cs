@@ -1,8 +1,9 @@
-
-
 using AutoMapper;
 using Domain.Interfaces;
 using Presentation.Dto.Profile;
+using Presentation.Dto.Account;
+using System.Security.Cryptography;
+using System.Text;
 
 namespace Application.Services
 {
@@ -11,12 +12,14 @@ namespace Application.Services
         private readonly IAccountRepository _repository;
         private readonly IMapper _mapper;
         private readonly IValidationService _validationService;
+        private readonly TokenService _tokenService;
 
-        public AccountService(IAccountRepository repository, IMapper mapper, IValidationService validationService)
+        public AccountService(IAccountRepository repository, IMapper mapper, IValidationService validationService, TokenService tokenService)
         {
             _repository = repository;
             _mapper = mapper;
             _validationService = validationService;
+            _tokenService = tokenService;
         }
 
         public async Task<IEnumerable<GetAccountDto>> GetAllAsync()
@@ -52,6 +55,40 @@ namespace Application.Services
             await _repository.DeleteAsync(id);
             return true;
         }
-    }
 
+        public async Task<GetAccountDto> RegisterAsync(RegisterDto dto)
+        {
+            // Hash the password
+            using var sha256 = SHA256.Create();
+            var passwordHash = Convert.ToBase64String(sha256.ComputeHash(Encoding.UTF8.GetBytes(dto.Password)));
+            var account = new Account
+            {
+                Name = dto.Name,
+                Email = dto.Email,
+                PasswordHash = passwordHash
+            };
+            var created = await _repository.AddAsync(account);
+            return _mapper.Map<GetAccountDto>(created);
+        }
+
+        public async Task<LoginResponseDto> LoginAsync(LoginDto dto)
+        {
+            var accounts = await _repository.GetAllAsync();
+            var account = accounts.FirstOrDefault(a => a.Email == dto.Email);
+            if (account == null)
+                throw new Exception("Invalid credentials");
+            using var sha256 = SHA256.Create();
+            var passwordHash = Convert.ToBase64String(sha256.ComputeHash(Encoding.UTF8.GetBytes(dto.Password)));
+            if (account.PasswordHash != passwordHash)
+                throw new Exception("Invalid credentials");
+            // Generate JWT token
+            var token = _tokenService.GenerateToken(account.Id, account.Email);
+            return new LoginResponseDto
+            {
+                Token = token,
+                Email = account.Email,
+                Name = account.Name
+            };
+        }
+    }
 }

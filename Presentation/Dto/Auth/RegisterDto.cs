@@ -1,6 +1,6 @@
-namespace Presentation.Dto.Profile
+namespace Presentation.Dto.Account
 {
-    public class CreateAccountDto
+    public class RegisterDto
     {
         public string Name { get; set; }
         public string Email { get; set; }

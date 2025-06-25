@@ -49,3 +49,8 @@
 /Users/haidermajid/Desktop/storeapi/bin/Debug/net9.0/Mono.TextTemplating.dll
 /Users/haidermajid/Desktop/storeapi/bin/Debug/net9.0/System.CodeDom.dll
 /Users/haidermajid/Desktop/storeapi/obj/Debug/net9.0/storeapi.sourcelink.json
+/Users/haidermajid/Desktop/storeapi/bin/Debug/net9.0/Microsoft.IdentityModel.Abstractions.dll
+/Users/haidermajid/Desktop/storeapi/bin/Debug/net9.0/Microsoft.IdentityModel.JsonWebTokens.dll
+/Users/haidermajid/Desktop/storeapi/bin/Debug/net9.0/Microsoft.IdentityModel.Logging.dll
+/Users/haidermajid/Desktop/storeapi/bin/Debug/net9.0/Microsoft.IdentityModel.Tokens.dll
+/Users/haidermajid/Desktop/storeapi/bin/Debug/net9.0/System.IdentityModel.Tokens.Jwt.dll

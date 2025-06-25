@@ -30,14 +30,12 @@ builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddScoped<ICategoryService, CategoryService>();
 builder.Services.AddScoped<IAccountService, AccountService>();
 builder.Services.AddScoped<IValidationService, ValidationService>();
-
-
+builder.Services.AddSingleton(new TokenService(builder.Configuration["Jwt:Key"], int.Parse(builder.Configuration["Jwt:ExpiresInMinutes"])));
 
 // AutoMapper
 builder.Services.AddAutoMapper(typeof(ProductProfile));
 builder.Services.AddAutoMapper(typeof(CategoryProfile));
 builder.Services.AddAutoMapper(typeof(AccountProfile));
-
 
 // Validation
 builder.Services.AddValidatorsFromAssemblyContaining<CreateProductValidator>();
