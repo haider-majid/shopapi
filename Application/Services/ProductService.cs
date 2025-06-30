@@ -46,8 +46,7 @@ namespace Application.Services
 
         public async Task<bool> UpdateAsync(Guid id, UpdateProductDto dto)
         {
-            if (id != dto.Id)
-                throw new ArgumentException("ID mismatch");
+
 
             await _validationService.ValidateAsync(dto);
 
@@ -55,7 +54,13 @@ namespace Application.Services
             if (existingProduct == null)
                 return false;
 
-            _mapper.Map(dto, existingProduct);
+            if (dto.Name != null)
+                existingProduct.Name = dto.Name;
+            if (dto.Description != null)
+                existingProduct.Description = dto.Description;
+            if (dto.Price != null)
+                existingProduct.Price = dto.Price.Value;
+            if (dto.Stock != null)
             await _repository.UpdateAsync(existingProduct);
             return true;
         }
