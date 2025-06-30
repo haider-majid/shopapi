@@ -1,5 +1,6 @@
 
 
+using System.ComponentModel.DataAnnotations;
 using API.Controllers;
 using Application.Services;
 using AutoMapper;
@@ -27,8 +28,11 @@ namespace Presentation.Controllers
         [HttpPost]
         public async Task<IActionResult> Create(CreateAccountDto dto)
         {
-            var account = await _accountService.CreateAsync(dto);
-            return Ok(account);
+
+            var createdCategory = await _accountService.CreateAsync(dto);
+            return CreatedAtAction(nameof(GetAll), createdCategory);
+
+
         }
 
         [HttpPut("{id}")]
@@ -51,7 +55,7 @@ namespace Presentation.Controllers
             var account = await _accountService.GetByIdAsync(id);
             return Ok(account);
         }
-        
+
     }
 
 }
