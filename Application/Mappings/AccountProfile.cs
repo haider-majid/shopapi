@@ -1,8 +1,7 @@
-
-
-
 using AutoMapper;
 using Presentation.Dto.Profile;
+using System.Security.Cryptography;
+using System.Text;
 
 namespace Application.Mappings
 {
@@ -10,7 +9,9 @@ namespace Application.Mappings
     {
         public AccountProfile()
         {
-            CreateMap<CreateAccountDto, Account>();
+            CreateMap<CreateAccountDto, Account>()
+                .ForMember(dest => dest.PasswordHash, opt => opt.MapFrom(src =>
+                    Convert.ToBase64String(SHA256.Create().ComputeHash(Encoding.UTF8.GetBytes(src.Password)))));
             CreateMap<UpdateAccountDto, Account>();
             CreateMap<Account, GetAccountDto>();
         }
