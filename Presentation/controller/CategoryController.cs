@@ -37,13 +37,13 @@ namespace API.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update(UpdateCategoryDto dto)
+        public async Task<IActionResult> Update(Guid id, UpdateCategoryDto dto)
         {
             try
             {
-                var success = await _categoryService.UpdateAsync(dto);
+                var success = await _categoryService.UpdateAsync(id, dto);
                 if (success)
-                    return NoContent();
+                    return Ok(new { message = "Category updated successfully" });
                 return NotFound();
             }
             catch (ValidationException ex)

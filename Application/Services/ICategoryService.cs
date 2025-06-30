@@ -6,7 +6,7 @@ namespace Application.Services
     {
         Task<IEnumerable<GetCategoryDto>> GetAllAsync();
         Task<GetCategoryDto> CreateAsync(CreateCategoryDto dto);
-        Task<bool> UpdateAsync(UpdateCategoryDto dto);
+        Task<bool> UpdateAsync(Guid id, UpdateCategoryDto dto);
         Task<bool> DeleteAsync(Guid id);
     }
 }

@@ -1,5 +1,6 @@
 
 
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure
@@ -28,6 +29,8 @@ namespace Infrastructure
         public async Task UpdateAsync(Category category)
         {
             _context.Categories.Update(category);
+            await _context.SaveChangesAsync();
+
         }
 
         public async Task DeleteAsync(Guid id)
@@ -38,6 +41,14 @@ namespace Infrastructure
                 _context.Categories.Remove(category);
                 await _context.SaveChangesAsync();
             }
+        }
+
+        public async Task<Category> GetByIdAsync(Guid id)
+        {
+            var category = await _context.Categories.FindAsync(id);
+            if (category == null)
+                 return null;
+            return category;
         }
     }
 }

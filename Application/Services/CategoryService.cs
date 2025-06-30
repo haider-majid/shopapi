@@ -35,11 +35,16 @@ namespace Application.Services
             return _mapper.Map<GetCategoryDto>(category);
         }
 
-        public async Task<bool> UpdateAsync(UpdateCategoryDto dto)
+        public async Task<bool> UpdateAsync(Guid id, UpdateCategoryDto dto)
         {
             await _validationService.ValidateAsync(dto);
 
-            var category = _mapper.Map<Category>(dto);
+            var category = await _repository.GetByIdAsync(id);
+            if (category == null)
+                return false;
+
+            category.Name = dto.Name;
+
             await _repository.UpdateAsync(category);
             return true;
         }
@@ -49,5 +54,7 @@ namespace Application.Services
             await _repository.DeleteAsync(id);
             return true;
         }
+
+
     }
 }
