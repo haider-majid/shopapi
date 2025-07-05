@@ -16,9 +16,19 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+// Redis Configuration
+builder.Services.AddStackExchangeRedisCache(options =>
+{
+    options.Configuration = builder.Configuration.GetConnectionString("Redis") ?? "localhost:6379";
+    options.InstanceName = "StoreAPI_";
+});
+
 // Database
 builder.Services.AddDbContext<ShopDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+// Cache Service
+builder.Services.AddScoped<ICacheService, RedisCacheService>();
 
 // Repositories
 builder.Services.AddScoped<IProductRepository, ProductRepository>();
