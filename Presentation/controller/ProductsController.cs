@@ -18,84 +18,49 @@ namespace Presentation.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            try
-            {
-                var products = await _productService.GetAllAsync();
-                return HandleSuccess(products, "Products retrieved successfully");
-            }
-            catch (Exception ex)
-            {
-                return HandleBadRequest(ex.Message);
-            }
+            return await HandleServiceCall(
+                () => _productService.GetAllAsync(),
+                products => HandleSuccess(products, "Products retrieved successfully")
+            );
         }
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(Guid id)
         {
-            try
-            {
-                var product = await _productService.GetByIdAsync(id);
-                if (product == null)
-                    return HandleNotFoundException("Product not found");
-
-                return HandleSuccess(product, "Product retrieved successfully");
-            }
-            catch (Exception ex)
-            {
-                return HandleBadRequest(ex.Message);
-            }
+            return await HandleServiceCall(
+                () => _productService.GetByIdAsync(id),
+                product => HandleSuccess(product, "Product retrieved successfully"),
+                "Product not found"
+            );
         }
 
         [HttpPost]
         public async Task<IActionResult> Create(CreateProductDto dto)
         {
-            try
-            {
-                var createdProduct = await _productService.CreateAsync(dto);
-                return HandleCreated(createdProduct, nameof(GetById), new { id = createdProduct.Id });
-            }
-            catch (ValidationException ex)
-            {
-                return HandleValidationException(ex);
-            }
+            return await HandleServiceCall(
+                () => _productService.CreateAsync(dto),
+                createdProduct => HandleCreated(createdProduct, nameof(GetById), new { id = createdProduct.Id })
+            );
         }
 
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(Guid id, UpdateProductDto dto)
         {
-            try
-            {
-                var success = await _productService.UpdateAsync(id, dto);
-                if (!success)
-                    return HandleNotFoundException("Product not found");
-
-                return HandleNoContent();
-            }
-            catch (ValidationException ex)
-            {
-                return HandleValidationException(ex);
-            }
-            catch (ArgumentException)
-            {
-                return HandleBadRequest("ID mismatch");
-            }
+            return await HandleServiceCall(
+                () => _productService.UpdateAsync(id, dto),
+                "Product not found",
+                "Product updated successfully"
+            );
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(Guid id)
         {
-            try
-            {
-                var success = await _productService.DeleteAsync(id);
-                if (!success)
-                    return HandleNotFoundException("Product not found");
-
-                return HandleNoContent();
-            }
-            catch (Exception ex)
-            {
-                return HandleBadRequest(ex.Message);
-            }
+            return await HandleServiceCall(
+                () => _productService.DeleteAsync(id),
+                "Product not found",
+                "Product deleted successfully"
+            );
         }
     }
 }

@@ -21,80 +21,49 @@ namespace Presentation.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            try
-            {
-                var accounts = await _accountService.GetAllAsync();
-                return HandleSuccess(accounts, "Accounts retrieved successfully");
-            }
-            catch (Exception ex)
-            {
-                return HandleBadRequest(ex.Message);
-            }
+            return await HandleServiceCall(
+                () => _accountService.GetAllAsync(),
+                accounts => HandleSuccess(accounts, "Accounts retrieved successfully")
+            );
         }
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(Guid id)
         {
-            try
-            {
-                var account = await _accountService.GetByIdAsync(id);
-                if (account == null)
-                    return HandleNotFoundException("Account not found");
-
-                return HandleSuccess(account, "Account retrieved successfully");
-            }
-            catch (Exception ex)
-            {
-                return HandleBadRequest(ex.Message);
-            }
+            return await HandleServiceCall(
+                () => _accountService.GetByIdAsync(id),
+                account => HandleSuccess(account, "Account retrieved successfully"),
+                "Account not found"
+            );
         }
 
         [HttpPost]
         public async Task<IActionResult> Create(CreateAccountDto dto)
         {
-            try
-            {
-                var createdAccount = await _accountService.CreateAsync(dto);
-                return HandleCreated(createdAccount, nameof(GetById), new { id = createdAccount.Id });
-            }
-            catch (ValidationException ex)
-            {
-                return HandleValidationException(ex);
-            }
+            return await HandleServiceCall(
+                () => _accountService.CreateAsync(dto),
+                createdAccount => HandleCreated(createdAccount, nameof(GetById), new { id = createdAccount.Id })
+            );
         }
 
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(Guid id, UpdateAccountDto dto)
         {
-            try
-            {
-                var account = await _accountService.UpdateAsync(dto);
-                if (account == null)
-                    return HandleNotFoundException("Account not found");
-
-                return HandleSuccess(account, "Account updated successfully");
-            }
-            catch (ValidationException ex)
-            {
-                return HandleValidationException(ex);
-            }
+            return await HandleServiceCall(
+                () => _accountService.UpdateAsync(dto),
+                account => HandleSuccess(account, "Account updated successfully"),
+                "Account not found"
+            );
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(Guid id)
         {
-            try
-            {
-                var account = await _accountService.DeleteAsync(id);
-                if (account == null)
-                    return HandleNotFoundException("Account not found");
-
-                return HandleSuccess(account, "Account deleted successfully");
-            }
-            catch (Exception ex)
-            {
-                return HandleBadRequest(ex.Message);
-            }
+            return await HandleServiceCall(
+                () => _accountService.DeleteAsync(id),
+                account => HandleSuccess(account, "Account deleted successfully"),
+                "Account not found"
+            );
         }
     }
 }

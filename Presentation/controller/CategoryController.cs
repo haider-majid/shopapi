@@ -17,64 +17,39 @@ namespace Presentation.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            try
-            {
-                var categories = await _categoryService.GetAllAsync();
-                return HandleSuccess(categories, "Categories retrieved successfully");
-            }
-            catch (Exception ex)
-            {
-                return HandleBadRequest(ex.Message);
-            }
+            return await HandleServiceCall(
+                () => _categoryService.GetAllAsync(),
+                categories => HandleSuccess(categories, "Categories retrieved successfully")
+            );
         }
-
 
         [HttpPost]
         public async Task<IActionResult> Create(CreateCategoryDto dto)
         {
-            try
-            {
-                var createdCategory = await _categoryService.CreateAsync(dto);
-                return HandleCreated(createdCategory, nameof(GetAll), new { id = createdCategory.Id });
-            }
-            catch (ValidationException ex)
-            {
-                return HandleValidationException(ex);
-            }
+            return await HandleServiceCall(
+                () => _categoryService.CreateAsync(dto),
+                createdCategory => HandleCreated(createdCategory, nameof(GetAll), new { id = createdCategory.Id })
+            );
         }
 
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(Guid id, UpdateCategoryDto dto)
         {
-            try
-            {
-                var success = await _categoryService.UpdateAsync(id, dto);
-                if (!success)
-                    return HandleNotFoundException("Category not found");
-
-                return HandleSuccess(null, "Category updated successfully");
-            }
-            catch (ValidationException ex)
-            {
-                return HandleValidationException(ex);
-            }
+            return await HandleServiceCall(
+                () => _categoryService.UpdateAsync(id, dto),
+                "Category not found",
+                "Category updated successfully"
+            );
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(Guid id)
         {
-            try
-            {
-                var success = await _categoryService.DeleteAsync(id);
-                if (!success)
-                    return HandleNotFoundException("Category not found");
-
-                return HandleNoContent();
-            }
-            catch (Exception ex)
-            {
-                return HandleBadRequest(ex.Message);
-            }
+            return await HandleServiceCall(
+                () => _categoryService.DeleteAsync(id),
+                "Category not found",
+                "Category deleted successfully"
+            );
         }
     }
 }
