@@ -1,14 +1,11 @@
 using Microsoft.AspNetCore.Mvc;
-using Domain;
-using Application;
+using Application.Services;
 using AutoMapper;
 using FluentValidation;
-using Application.Services;
+using Application;
 
-namespace API.Controllers
+namespace Presentation.Controllers
 {
-    [ApiController]
-    [Route("api/[controller]")]
     public class ProductsController : BaseController
     {
         private readonly IProductService _productService;
@@ -21,16 +18,32 @@ namespace API.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            var products = await _productService.GetAllAsync();
-            return Ok(products);
+            try
+            {
+                var products = await _productService.GetAllAsync();
+                return HandleSuccess(products, "Products retrieved successfully");
+            }
+            catch (Exception ex)
+            {
+                return HandleBadRequest(ex.Message);
+            }
         }
 
         [HttpGet("{id}")]
-        public async Task<IActionResult> Get(Guid id)
+        public async Task<IActionResult> GetById(Guid id)
         {
-            var product = await _productService.GetByIdAsync(id);
-            if (product == null) return NotFound();
-            return Ok(product);
+            try
+            {
+                var product = await _productService.GetByIdAsync(id);
+                if (product == null)
+                    return HandleNotFoundException("Product not found");
+
+                return HandleSuccess(product, "Product retrieved successfully");
+            }
+            catch (Exception ex)
+            {
+                return HandleBadRequest(ex.Message);
+            }
         }
 
         [HttpPost]
@@ -39,11 +52,11 @@ namespace API.Controllers
             try
             {
                 var createdProduct = await _productService.CreateAsync(dto);
-                return CreatedAtAction(nameof(Get), new { id = createdProduct.Id }, createdProduct);
+                return HandleCreated(createdProduct, nameof(GetById), new { id = createdProduct.Id });
             }
             catch (ValidationException ex)
             {
-                return BadRequest(ex.Errors);
+                return HandleValidationException(ex);
             }
         }
 
@@ -53,27 +66,36 @@ namespace API.Controllers
             try
             {
                 var success = await _productService.UpdateAsync(id, dto);
-                if (success)
-                    return NoContent();
-                return NotFound();
+                if (!success)
+                    return HandleNotFoundException("Product not found");
+
+                return HandleNoContent();
             }
             catch (ValidationException ex)
             {
-                return BadRequest(ex.Errors);
+                return HandleValidationException(ex);
             }
             catch (ArgumentException)
             {
-                return BadRequest("ID mismatch");
+                return HandleBadRequest("ID mismatch");
             }
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(Guid id)
         {
-            var success = await _productService.DeleteAsync(id);
-            if (success)
-                return NoContent();
-            return NotFound();
+            try
+            {
+                var success = await _productService.DeleteAsync(id);
+                if (!success)
+                    return HandleNotFoundException("Product not found");
+
+                return HandleNoContent();
+            }
+            catch (Exception ex)
+            {
+                return HandleBadRequest(ex.Message);
+            }
         }
     }
 }

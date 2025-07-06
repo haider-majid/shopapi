@@ -2,9 +2,8 @@ using AutoMapper;
 using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
 using Application.Services;
-using Application;
 
-namespace API.Controllers
+namespace Presentation.Controllers
 {
     public class CategoryController : BaseController
     {
@@ -18,9 +17,17 @@ namespace API.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            var categories = await _categoryService.GetAllAsync();
-            return Ok(categories);
+            try
+            {
+                var categories = await _categoryService.GetAllAsync();
+                return HandleSuccess(categories, "Categories retrieved successfully");
+            }
+            catch (Exception ex)
+            {
+                return HandleBadRequest(ex.Message);
+            }
         }
+
 
         [HttpPost]
         public async Task<IActionResult> Create(CreateCategoryDto dto)
@@ -28,11 +35,11 @@ namespace API.Controllers
             try
             {
                 var createdCategory = await _categoryService.CreateAsync(dto);
-                return CreatedAtAction(nameof(GetAll), createdCategory);
+                return HandleCreated(createdCategory, nameof(GetAll), new { id = createdCategory.Id });
             }
             catch (ValidationException ex)
             {
-                return BadRequest(ex.Errors);
+                return HandleValidationException(ex);
             }
         }
 
@@ -42,23 +49,32 @@ namespace API.Controllers
             try
             {
                 var success = await _categoryService.UpdateAsync(id, dto);
-                if (success)
-                    return Ok(new { message = "Category updated successfully" });
-                return NotFound();
+                if (!success)
+                    return HandleNotFoundException("Category not found");
+
+                return HandleSuccess(null, "Category updated successfully");
             }
             catch (ValidationException ex)
             {
-                return BadRequest(ex.Errors);
+                return HandleValidationException(ex);
             }
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(Guid id)
         {
-            var success = await _categoryService.DeleteAsync(id);
-            if (success)
-                return NoContent();
-            return NotFound();
+            try
+            {
+                var success = await _categoryService.DeleteAsync(id);
+                if (!success)
+                    return HandleNotFoundException("Category not found");
+
+                return HandleNoContent();
+            }
+            catch (Exception ex)
+            {
+                return HandleBadRequest(ex.Message);
+            }
         }
     }
 }

@@ -1,35 +1,46 @@
 using Application.Services;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
+using FluentValidation;
 using Presentation.Dto.Account;
 
 namespace Presentation.Controllers
 {
-    [ApiController]
-    [Route("api/[controller]")]
-    public class AuthController : ControllerBase
+    public class AuthController : BaseController
     {
         private readonly IAccountService _accountService;
-        private readonly IMapper _mapper;
 
-        public AuthController(IAccountService accountService, IMapper mapper)
+        public AuthController(IAccountService accountService, IMapper mapper) : base(mapper)
         {
             _accountService = accountService;
-            _mapper = mapper;
         }
 
         [HttpPost("register")]
         public async Task<IActionResult> Register(RegisterDto dto)
         {
-            var account = await _accountService.RegisterAsync(dto);
-            return Ok(account);
+            try
+            {
+                var account = await _accountService.RegisterAsync(dto);
+                return HandleCreated(account, nameof(Login), new { });
+            }
+            catch (ValidationException ex)
+            {
+                return HandleValidationException(ex);
+            }
         }
 
         [HttpPost("login")]
         public async Task<IActionResult> Login(LoginDto dto)
         {
-            var response = await _accountService.LoginAsync(dto);
-            return Ok(response);
+            try
+            {
+                var response = await _accountService.LoginAsync(dto);
+                return HandleSuccess(response, "Login successful");
+            }
+            catch (ValidationException ex)
+            {
+                return HandleValidationException(ex);
+            }
         }
     }
 }
