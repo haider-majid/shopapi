@@ -18,19 +18,15 @@ namespace Presentation.Controllers
         [HttpPost("register")]
         public async Task<IActionResult> Register(RegisterDto dto)
         {
-            return await HandleServiceCall(
-                () => _accountService.RegisterAsync(dto),
-                account => HandleCreated(account, nameof(Login), new { })
-            );
+            var account = await _accountService.RegisterAsync(dto);
+            return CreatedAtAction(nameof(Login), new { }, account);
         }
 
         [HttpPost("login")]
         public async Task<IActionResult> Login(LoginDto dto)
         {
-            return await HandleServiceCall(
-                () => _accountService.LoginAsync(dto),
-                response => HandleSuccess(response, "Login successful")
-            );
+            var response = await _accountService.LoginAsync(dto);
+            return Ok(response);
         }
     }
 }

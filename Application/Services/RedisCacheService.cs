@@ -47,9 +47,7 @@ namespace Application.Services
 
         public async Task RemoveByPatternAsync(string pattern)
         {
-            // Note: This is a simplified implementation
-            // In a production environment, you might want to use Redis SCAN command
-            // For now, we'll just remove the specific key if it matches the pattern
+
             await _cache.RemoveAsync(pattern);
         }
 

@@ -18,49 +18,33 @@ namespace Presentation.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            return await HandleServiceCall(
-                () => _productService.GetAllAsync(),
-                products => HandleSuccess(products, "Products retrieved successfully")
-            );
+            var products = await _productService.GetAllAsync();
+            return Ok(products);
         }
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(Guid id)
         {
-            return await HandleServiceCall(
-                () => _productService.GetByIdAsync(id),
-                product => HandleSuccess(product, "Product retrieved successfully"),
-                "Product not found"
-            );
+            var product = await _productService.GetByIdAsync(id);
+            if (product == null)
+                return NotFound();
+            return Ok(product);
         }
 
         [HttpPost]
         public async Task<IActionResult> Create(CreateProductDto dto)
         {
-            return await HandleServiceCall(
-                () => _productService.CreateAsync(dto),
-                createdProduct => HandleCreated(createdProduct, nameof(GetById), new { id = createdProduct.Id })
-            );
+            var createdProduct = await _productService.CreateAsync(dto);
+            return CreatedAtAction(nameof(GetById), new { id = createdProduct.Id }, createdProduct);
         }
 
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(Guid id, UpdateProductDto dto)
         {
-            return await HandleServiceCall(
-                () => _productService.UpdateAsync(id, dto),
-                "Product not found",
-                "Product updated successfully"
-            );
-        }
-
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete(Guid id)
-        {
-            return await HandleServiceCall(
-                () => _productService.DeleteAsync(id),
-                "Product not found",
-                "Product deleted successfully"
-            );
+            var updatedProduct = await _productService.UpdateAsync(id, dto);
+            if (updatedProduct == null)
+                return NotFound();
+            return Ok(updatedProduct);
         }
     }
 }

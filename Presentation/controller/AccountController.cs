@@ -21,49 +21,33 @@ namespace Presentation.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            return await HandleServiceCall(
-                () => _accountService.GetAllAsync(),
-                accounts => HandleSuccess(accounts, "Accounts retrieved successfully")
-            );
+            var accounts = await _accountService.GetAllAsync();
+            return Ok(accounts);
         }
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(Guid id)
         {
-            return await HandleServiceCall(
-                () => _accountService.GetByIdAsync(id),
-                account => HandleSuccess(account, "Account retrieved successfully"),
-                "Account not found"
-            );
+            var account = await _accountService.GetByIdAsync(id);
+            if (account == null)
+                return NotFound();
+            return Ok(account);
         }
 
         [HttpPost]
         public async Task<IActionResult> Create(CreateAccountDto dto)
         {
-            return await HandleServiceCall(
-                () => _accountService.CreateAsync(dto),
-                createdAccount => HandleCreated(createdAccount, nameof(GetById), new { id = createdAccount.Id })
-            );
+            var createdAccount = await _accountService.CreateAsync(dto);
+            return CreatedAtAction(nameof(GetById), new { id = createdAccount.Id }, createdAccount);
         }
 
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(Guid id, UpdateAccountDto dto)
         {
-            return await HandleServiceCall(
-                () => _accountService.UpdateAsync(dto),
-                account => HandleSuccess(account, "Account updated successfully"),
-                "Account not found"
-            );
-        }
-
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete(Guid id)
-        {
-            return await HandleServiceCall(
-                () => _accountService.DeleteAsync(id),
-                account => HandleSuccess(account, "Account deleted successfully"),
-                "Account not found"
-            );
+            var updatedAccount = await _accountService.UpdateAsync(dto);
+            if (updatedAccount == null)
+                return NotFound();
+            return Ok(updatedAccount);
         }
     }
 }

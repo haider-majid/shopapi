@@ -17,39 +17,24 @@ namespace Presentation.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            return await HandleServiceCall(
-                () => _categoryService.GetAllAsync(),
-                categories => HandleSuccess(categories, "Categories retrieved successfully")
-            );
+            var categories = await _categoryService.GetAllAsync();
+            return Ok(categories);
         }
 
         [HttpPost]
         public async Task<IActionResult> Create(CreateCategoryDto dto)
         {
-            return await HandleServiceCall(
-                () => _categoryService.CreateAsync(dto),
-                createdCategory => HandleCreated(createdCategory, nameof(GetAll), new { id = createdCategory.Id })
-            );
+            var createdCategory = await _categoryService.CreateAsync(dto);
+            return CreatedAtAction(nameof(GetAll), new { id = createdCategory.Id }, createdCategory);
         }
 
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(Guid id, UpdateCategoryDto dto)
         {
-            return await HandleServiceCall(
-                () => _categoryService.UpdateAsync(id, dto),
-                "Category not found",
-                "Category updated successfully"
-            );
-        }
-
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete(Guid id)
-        {
-            return await HandleServiceCall(
-                () => _categoryService.DeleteAsync(id),
-                "Category not found",
-                "Category deleted successfully"
-            );
+            var updatedCategory = await _categoryService.UpdateAsync(id, dto);
+            if (updatedCategory == null)
+                return NotFound();
+            return Ok(updatedCategory);
         }
     }
 }
