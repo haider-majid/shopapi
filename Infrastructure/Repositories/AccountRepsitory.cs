@@ -24,14 +24,12 @@ namespace Infrastructure.Repositories
         public async Task<Account> AddAsync(Account account)
         {
             _context.Accounts.Add(account);
-            await _context.SaveChangesAsync();
             return account;
         }
 
         public async Task UpdateAsync(Account account)
         {
             _context.Accounts.Update(account);
-            await _context.SaveChangesAsync();
         }
 
         public async Task DeleteAsync(Guid id)
@@ -40,7 +38,6 @@ namespace Infrastructure.Repositories
             if (account != null)
             {
                 _context.Accounts.Remove(account);
-                await _context.SaveChangesAsync();
             }
         }
     }

@@ -22,15 +22,12 @@ namespace Infrastructure
         public async Task<Category> AddAsync(Category category)
         {
             _context.Categories.Add(category);
-            await _context.SaveChangesAsync();
             return category;
         }
 
         public async Task UpdateAsync(Category category)
         {
             _context.Categories.Update(category);
-            await _context.SaveChangesAsync();
-
         }
 
         public async Task DeleteAsync(Guid id)
@@ -39,7 +36,6 @@ namespace Infrastructure
             if (category != null)
             {
                 _context.Categories.Remove(category);
-                await _context.SaveChangesAsync();
             }
         }
 
@@ -47,7 +43,7 @@ namespace Infrastructure
         {
             var category = await _context.Categories.FindAsync(id);
             if (category == null)
-                 return null;
+                return null;
             return category;
         }
     }

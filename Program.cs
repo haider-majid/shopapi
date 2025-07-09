@@ -10,6 +10,7 @@ using Application.Mappings;
 using Application.Validation;
 using Infrastructure.Repositories;
 using MediatR;
+using Infrastructure.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -31,10 +32,8 @@ builder.Services.AddDbContext<ShopDbContext>(options =>
 // Cache Service
 builder.Services.AddScoped<ICacheService, RedisCacheService>();
 
-// Repositories
-builder.Services.AddScoped<IProductRepository, ProductRepository>();
-builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
-builder.Services.AddScoped<IAccountRepository, AccountRepository>();
+// UnitOfWork
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
 // Services
 builder.Services.AddScoped<IProductService, ProductService>();

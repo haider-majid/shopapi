@@ -1,23 +1,24 @@
 using AutoMapper;
 using Domain;
 using Application;
+using Domain.Interfaces;
 
 namespace Application.Services
 {
     public class CategoryService : ICategoryService
     {
-        private readonly ICategoryRepository _repository;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
         private readonly IValidationService _validationService;
         private readonly ICacheService _cacheService;
 
         public CategoryService(
-            ICategoryRepository repository,
+            IUnitOfWork unitOfWork,
             IMapper mapper,
             IValidationService validationService,
             ICacheService cacheService)
         {
-            _repository = repository;
+            _unitOfWork = unitOfWork;
             _mapper = mapper;
             _validationService = validationService;
             _cacheService = cacheService;
@@ -33,7 +34,7 @@ namespace Application.Services
                 return cachedCategories;
 
             // If not in cache, get from database
-            var categories = await _repository.GetAllAsync();
+            var categories = await _unitOfWork.CategoryRepository.GetAllAsync();
             var categoryDtos = _mapper.Map<IEnumerable<GetCategoryDto>>(categories);
 
             // Cache the result
@@ -47,7 +48,8 @@ namespace Application.Services
             await _validationService.ValidateAsync(dto);
 
             var category = _mapper.Map<Category>(dto);
-            await _repository.AddAsync(category);
+            await _unitOfWork.CategoryRepository.AddAsync(category);
+            await _unitOfWork.SaveChangesAsync();
 
             // Invalidate cache after creating new category
             await InvalidateCategoryCache();
@@ -59,13 +61,14 @@ namespace Application.Services
         {
             await _validationService.ValidateAsync(dto);
 
-            var category = await _repository.GetByIdAsync(id);
+            var category = await _unitOfWork.CategoryRepository.GetByIdAsync(id);
             if (category == null)
                 return false;
 
             category.Name = dto.Name;
 
-            await _repository.UpdateAsync(category);
+            await _unitOfWork.CategoryRepository.UpdateAsync(category);
+            await _unitOfWork.SaveChangesAsync();
 
             // Invalidate cache after updating category
             await InvalidateCategoryCache();
@@ -75,7 +78,8 @@ namespace Application.Services
 
         public async Task<bool> DeleteAsync(Guid id)
         {
-            await _repository.DeleteAsync(id);
+            await _unitOfWork.CategoryRepository.DeleteAsync(id);
+            await _unitOfWork.SaveChangesAsync();
 
             // Invalidate cache after deleting category
             await InvalidateCategoryCache();

@@ -9,20 +9,20 @@ namespace Application.Services
 {
     public class AccountService : IAccountService
     {
-        private readonly IAccountRepository _repository;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
         private readonly IValidationService _validationService;
         private readonly TokenService _tokenService;
         private readonly ICacheService _cacheService;
 
         public AccountService(
-            IAccountRepository repository,
+            IUnitOfWork unitOfWork,
             IMapper mapper,
             IValidationService validationService,
             TokenService tokenService,
             ICacheService cacheService)
         {
-            _repository = repository;
+            _unitOfWork = unitOfWork;
             _mapper = mapper;
             _validationService = validationService;
             _tokenService = tokenService;
@@ -39,7 +39,7 @@ namespace Application.Services
                 return cachedAccounts;
 
             // If not in cache, get from database
-            var accounts = await _repository.GetAllAsync();
+            var accounts = await _unitOfWork.AccountRepository.GetAllAsync();
             var accountDtos = _mapper.Map<IEnumerable<GetAccountDto>>(accounts);
 
             // Cache the result
@@ -50,7 +50,7 @@ namespace Application.Services
 
         public async Task<GetAccountDto> GetByIdAsync(Guid id)
         {
-            var account = await _repository.GetByIdAsync(id);
+            var account = await _unitOfWork.AccountRepository.GetByIdAsync(id);
             return _mapper.Map<GetAccountDto>(account);
         }
 
@@ -58,7 +58,8 @@ namespace Application.Services
         {
             await _validationService.ValidateAsync(dto);
             var account = _mapper.Map<Account>(dto);
-            var created = await _repository.AddAsync(account);
+            var created = await _unitOfWork.AccountRepository.AddAsync(account);
+            await _unitOfWork.SaveChangesAsync();
 
             // Invalidate cache after creating new account
             await InvalidateAccountCache();
@@ -70,7 +71,8 @@ namespace Application.Services
         {
             await _validationService.ValidateAsync(dto);
             var account = _mapper.Map<Account>(dto);
-            await _repository.UpdateAsync(account);
+            await _unitOfWork.AccountRepository.UpdateAsync(account);
+            await _unitOfWork.SaveChangesAsync();
 
             // Invalidate cache after updating account
             await InvalidateAccountCache();
@@ -80,7 +82,8 @@ namespace Application.Services
 
         public async Task<bool> DeleteAsync(Guid id)
         {
-            await _repository.DeleteAsync(id);
+            await _unitOfWork.AccountRepository.DeleteAsync(id);
+            await _unitOfWork.SaveChangesAsync();
 
             // Invalidate cache after deleting account
             await InvalidateAccountCache();
@@ -99,7 +102,8 @@ namespace Application.Services
                 Email = dto.Email,
                 PasswordHash = passwordHash
             };
-            var created = await _repository.AddAsync(account);
+            var created = await _unitOfWork.AccountRepository.AddAsync(account);
+            await _unitOfWork.SaveChangesAsync();
 
             // Invalidate cache after registering new account
             await InvalidateAccountCache();
@@ -109,7 +113,7 @@ namespace Application.Services
 
         public async Task<LoginResponseDto> LoginAsync(LoginDto dto)
         {
-            var accounts = await _repository.GetAllAsync();
+            var accounts = await _unitOfWork.AccountRepository.GetAllAsync();
             var account = accounts.FirstOrDefault(a => a.Email == dto.Email);
             if (account == null)
                 throw new Exception("Invalid credentials");

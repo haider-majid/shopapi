@@ -1,23 +1,24 @@
 using AutoMapper;
 using Domain;
 using Application;
+using Domain.Interfaces;
 
 namespace Application.Services
 {
     public class ProductService : IProductService
     {
-        private readonly IProductRepository _repository;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
         private readonly IValidationService _validationService;
         private readonly ICacheService _cacheService;
 
         public ProductService(
-            IProductRepository repository,
+            IUnitOfWork unitOfWork,
             IMapper mapper,
             IValidationService validationService,
             ICacheService cacheService)
         {
-            _repository = repository;
+            _unitOfWork = unitOfWork;
             _mapper = mapper;
             _validationService = validationService;
             _cacheService = cacheService;
@@ -33,7 +34,7 @@ namespace Application.Services
                 return cachedProducts;
 
             // If not in cache, get from database
-            var products = await _repository.GetAllAsync();
+            var products = await _unitOfWork.ProductRepository.GetAllAsync();
             var productDtos = _mapper.Map<IEnumerable<GetProductDto>>(products);
 
             // Cache the result
@@ -44,7 +45,7 @@ namespace Application.Services
 
         public async Task<GetProductDto?> GetByIdAsync(Guid id)
         {
-            var product = await _repository.GetByIdAsync(id);
+            var product = await _unitOfWork.ProductRepository.GetByIdAsync(id);
             return product != null ? _mapper.Map<GetProductDto>(product) : null;
         }
 
@@ -55,8 +56,8 @@ namespace Application.Services
             var product = _mapper.Map<Product>(dto);
             if (product.Id == Guid.Empty)
                 product.Id = Guid.NewGuid();
-
-            var created = await _repository.AddAsync(product);
+            var created = await _unitOfWork.ProductRepository.AddAsync(product);
+            await _unitOfWork.SaveChangesAsync();
 
             // Invalidate cache after creating new product
             await InvalidateProductCache();
@@ -68,7 +69,7 @@ namespace Application.Services
         {
             await _validationService.ValidateAsync(dto);
 
-            var existingProduct = await _repository.GetByIdAsync(id);
+            var existingProduct = await _unitOfWork.ProductRepository.GetByIdAsync(id);
             if (existingProduct == null)
                 return false;
 
@@ -81,7 +82,8 @@ namespace Application.Services
             if (dto.Stock != null)
                 existingProduct.Stock = dto.Stock.Value;
 
-            await _repository.UpdateAsync(existingProduct);
+            await _unitOfWork.ProductRepository.UpdateAsync(existingProduct);
+            await _unitOfWork.SaveChangesAsync();
 
             // Invalidate cache after updating product
             await InvalidateProductCache();
@@ -91,11 +93,12 @@ namespace Application.Services
 
         public async Task<bool> DeleteAsync(Guid id)
         {
-            var product = await _repository.GetByIdAsync(id);
+            var product = await _unitOfWork.ProductRepository.GetByIdAsync(id);
             if (product == null)
                 return false;
 
-            await _repository.DeleteAsync(id);
+            await _unitOfWork.ProductRepository.DeleteAsync(id);
+            await _unitOfWork.SaveChangesAsync();
 
             // Invalidate cache after deleting product
             await InvalidateProductCache();
