@@ -9,6 +9,7 @@ using Domain.Interfaces;
 using Application.Mappings;
 using Application.Validation;
 using Infrastructure.Repositories;
+using MediatR;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -46,6 +47,9 @@ builder.Services.AddSingleton(new TokenService(builder.Configuration["Jwt:Key"],
 builder.Services.AddAutoMapper(typeof(ProductProfile));
 builder.Services.AddAutoMapper(typeof(CategoryProfile));
 builder.Services.AddAutoMapper(typeof(AccountProfile));
+
+// MediatR
+builder.Services.AddMediatR(typeof(Application.Commands.Product.CreateProductCommand).Assembly);
 
 // Validation
 builder.Services.AddValidatorsFromAssemblyContaining<CreateProductValidator>();

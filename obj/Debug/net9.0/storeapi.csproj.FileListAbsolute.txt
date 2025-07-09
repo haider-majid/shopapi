@@ -62,3 +62,6 @@
 /Users/haidermajid/Desktop/storeapi/bin/Debug/net9.0/Microsoft.Extensions.Primitives.dll
 /Users/haidermajid/Desktop/storeapi/bin/Debug/net9.0/Pipelines.Sockets.Unofficial.dll
 /Users/haidermajid/Desktop/storeapi/bin/Debug/net9.0/StackExchange.Redis.dll
+/Users/haidermajid/Desktop/storeapi/bin/Debug/net9.0/MediatR.dll
+/Users/haidermajid/Desktop/storeapi/bin/Debug/net9.0/MediatR.Contracts.dll
+/Users/haidermajid/Desktop/storeapi/bin/Debug/net9.0/MediatR.Extensions.Microsoft.DependencyInjection.dll

@@ -2,36 +2,38 @@ using AutoMapper;
 using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
 using Application.Services;
+using MediatR;
+using Application.Commands.Category;
 
 namespace Presentation.Controllers
 {
     public class CategoryController : BaseController
     {
-        private readonly ICategoryService _categoryService;
+        private readonly IMediator _mediator;
 
-        public CategoryController(IMapper mapper, ICategoryService categoryService) : base(mapper)
+        public CategoryController(IMapper mapper, IMediator mediator) : base(mapper)
         {
-            _categoryService = categoryService;
+            _mediator = mediator;
         }
 
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            var categories = await _categoryService.GetAllAsync();
+            var categories = await _mediator.Send(new GetAllCategoriesQuery());
             return Ok(categories);
         }
 
         [HttpPost]
         public async Task<IActionResult> Create(CreateCategoryDto dto)
         {
-            var createdCategory = await _categoryService.CreateAsync(dto);
+            var createdCategory = await _mediator.Send(new CreateCategoryCommand(dto));
             return CreatedAtAction(nameof(GetAll), new { id = createdCategory.Id }, createdCategory);
         }
 
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(Guid id, UpdateCategoryDto dto)
         {
-            var updatedCategory = await _categoryService.UpdateAsync(id, dto);
+            var updatedCategory = await _mediator.Send(new UpdateCategoryCommand(id, dto));
             if (updatedCategory == null)
                 return NotFound();
             return Ok(updatedCategory);
