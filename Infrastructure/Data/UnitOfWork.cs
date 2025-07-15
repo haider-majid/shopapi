@@ -21,8 +21,6 @@ namespace Infrastructure.Data
         public ICategoryRepository CategoryRepository => _categoryRepository ??= new CategoryRepository(_context);
         public IAccountRepository AccountRepository => _accountRepository ??= new AccountRepository(_context);
 
-        IProductRepository IUnitOfWork.ProductRepository => throw new NotImplementedException();
-
         public async Task<int> SaveChangesAsync()
         {
             return await _context.SaveChangesAsync();
