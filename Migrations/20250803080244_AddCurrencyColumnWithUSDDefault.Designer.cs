@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace storeapi.Migrations
 {
     [DbContext(typeof(ShopDbContext))]
-    [Migration("20250731093150_newChaanges")]
-    partial class newChaanges
+    [Migration("20250803080244_AddCurrencyColumnWithUSDDefault")]
+    partial class AddCurrencyColumnWithUSDDefault
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
