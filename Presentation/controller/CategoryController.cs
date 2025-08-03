@@ -1,7 +1,6 @@
-using AutoMapper;
-using FluentValidation;
+using Presentation.Dto.Category;
+using Presentation.Dto.Product;using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
-using Application.Services;
 using MediatR;
 using Application.Commands.Category;
 

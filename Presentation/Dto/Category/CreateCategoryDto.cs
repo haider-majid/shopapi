@@ -1,7 +1,9 @@
-
-
-public class CreateCategoryDto
+using Presentation.Dto.Category;
+using Presentation.Dto.Product;
+namespace Presentation.Dto.Category
 {
-    public string Name { get; set; } = string.Empty;
-    
+    public class CreateCategoryDto
+    {
+        public string Name { get; set; } = string.Empty;
+    }
 }

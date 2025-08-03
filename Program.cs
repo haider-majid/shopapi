@@ -1,16 +1,18 @@
-using Infrastructure;
-using Domain;
-using Application;
+using Infrastructure.Data;
+using Domain.Entities;
+using Presentation.Dto.Category;
+using Presentation.Dto.Product;
 using Application.Services;
+using Application.Common;
+using Application.Middleware;
 using FluentValidation;
 using FluentValidation.AspNetCore;
 using Microsoft.EntityFrameworkCore;
 using Domain.Interfaces;
 using Application.Mappings;
-using Application.Validation;
+using Application;
 using Infrastructure.Repositories;
 using MediatR;
-using Infrastructure.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -32,20 +34,20 @@ builder.Services.AddDbContext<ShopDbContext>(options =>
 // Cache Service
 builder.Services.AddScoped<ICacheService, RedisCacheService>();
 
+// Domain Event Dispatcher
+builder.Services.AddScoped<IDomainEventDispatcher, DomainEventDispatcher>();
+
 // UnitOfWork
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
 // Services
 builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddScoped<ICategoryService, CategoryService>();
-builder.Services.AddScoped<IAccountService, AccountService>();
 builder.Services.AddScoped<IValidationService, ValidationService>();
-builder.Services.AddSingleton(new TokenService(builder.Configuration["Jwt:Key"], int.Parse(builder.Configuration["Jwt:ExpiresInMinutes"])));
 
 // AutoMapper
 builder.Services.AddAutoMapper(typeof(ProductProfile));
 builder.Services.AddAutoMapper(typeof(CategoryProfile));
-builder.Services.AddAutoMapper(typeof(AccountProfile));
 
 // MediatR
 builder.Services.AddMediatR(typeof(Application.Commands.Product.CreateProductCommand).Assembly);
@@ -53,12 +55,14 @@ builder.Services.AddMediatR(typeof(Application.Commands.Product.CreateProductCom
 // Validation
 builder.Services.AddValidatorsFromAssemblyContaining<CreateProductValidator>();
 builder.Services.AddValidatorsFromAssemblyContaining<CreateCategoryValidator>();
-builder.Services.AddValidatorsFromAssemblyContaining<CreateAccountValidator>();
 builder.Services.AddFluentValidationAutoValidation();
 
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
+// Add global exception handling middleware first
+app.UseMiddleware<ExceptionHandlingMiddleware>();
+
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -66,7 +70,6 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-app.UseAuthorization();
 app.MapControllers();
 
 app.Run();

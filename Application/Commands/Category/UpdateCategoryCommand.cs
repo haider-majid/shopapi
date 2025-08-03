@@ -1,4 +1,5 @@
-namespace Application.Commands.Category
+using Presentation.Dto.Category;
+using Presentation.Dto.Product;namespace Application.Commands.Category
 {
     using MediatR;
 

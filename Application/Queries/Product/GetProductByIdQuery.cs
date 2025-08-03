@@ -1,12 +1,15 @@
 using MediatR;
 using System;
-using Application;
+using Presentation.Dto.Product;
 
-public class GetProductByIdQuery : IRequest<GetProductDto?>
+namespace Application.Queries.Product
 {
-    public Guid Id { get; set; }
-    public GetProductByIdQuery(Guid id)
+    public class GetProductByIdQuery : IRequest<GetProductDto?>
     {
-        Id = id;
+        public Guid Id { get; set; }
+        public GetProductByIdQuery(Guid id)
+        {
+            Id = id;
+        }
     }
 }

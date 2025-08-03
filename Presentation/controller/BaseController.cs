@@ -1,4 +1,5 @@
-using AutoMapper;
+using Presentation.Dto.Category;
+using Presentation.Dto.Product;using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Presentation.Controllers

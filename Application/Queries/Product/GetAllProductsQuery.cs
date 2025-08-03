@@ -1,7 +1,10 @@
 using MediatR;
 using System.Collections.Generic;
-using Application;
+using Presentation.Dto.Product;
 
-public class GetAllProductsQuery : IRequest<IEnumerable<GetProductDto>>
+namespace Application.Queries.Product
 {
+    public class GetAllProductsQuery : IRequest<IEnumerable<GetProductDto>>
+    {
+    }
 }

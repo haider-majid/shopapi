@@ -1,7 +1,8 @@
 using AutoMapper;
-using Domain;
-using Application;
 using Domain.Interfaces;
+using Domain.Entities;
+using Presentation.Dto.Category;
+using Presentation.Dto.Product;
 
 namespace Application.Services
 {
@@ -47,14 +48,14 @@ namespace Application.Services
         {
             await _validationService.ValidateAsync(dto);
 
-            var category = _mapper.Map<Category>(dto);
-            await _unitOfWork.CategoryRepository.AddAsync(category);
+            var category = Category.Create(dto.Name);
+            var created = await _unitOfWork.CategoryRepository.AddAsync(category);
             await _unitOfWork.SaveChangesAsync();
 
             // Invalidate cache after creating new category
             await InvalidateCategoryCache();
 
-            return _mapper.Map<GetCategoryDto>(category);
+            return _mapper.Map<GetCategoryDto>(created);
         }
 
         public async Task<bool> UpdateAsync(Guid id, UpdateCategoryDto dto)
@@ -65,7 +66,7 @@ namespace Application.Services
             if (category == null)
                 return false;
 
-            category.Name = dto.Name;
+            category.UpdateName(dto.Name);
 
             await _unitOfWork.CategoryRepository.UpdateAsync(category);
             await _unitOfWork.SaveChangesAsync();

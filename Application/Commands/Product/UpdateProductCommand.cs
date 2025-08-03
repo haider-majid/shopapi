@@ -1,8 +1,10 @@
-namespace Application.Commands.Product
+using Presentation.Dto.Category;
+using Presentation.Dto.Product;namespace Application.Commands.Product
 {
     using MediatR;
     using System;
-    using Application;
+    using Presentation.Dto.Category;
+using Presentation.Dto.Product;
 
     public class UpdateProductCommand : IRequest<GetProductDto?>
     {

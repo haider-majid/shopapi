@@ -1,7 +1,6 @@
-using System.Collections.Generic;
-using System.Threading.Tasks;
+using Domain.Entities;
 
-namespace Domain
+namespace Domain.Interfaces
 {
     public interface IProductRepository
     {

@@ -1,7 +1,8 @@
 using System.Threading.Tasks;
-using Domain;
+using Domain.Entities;
 using Domain.Interfaces;
 using Infrastructure.Repositories;
+using Infrastructure.Data;
 
 namespace Infrastructure.Data
 {
@@ -10,7 +11,6 @@ namespace Infrastructure.Data
         private readonly ShopDbContext _context;
         private IProductRepository _productRepository;
         private ICategoryRepository _categoryRepository;
-        private IAccountRepository _accountRepository;
 
         public UnitOfWork(ShopDbContext context)
         {
@@ -19,7 +19,6 @@ namespace Infrastructure.Data
 
         public IProductRepository ProductRepository => _productRepository ??= new ProductRepository(_context);
         public ICategoryRepository CategoryRepository => _categoryRepository ??= new CategoryRepository(_context);
-        public IAccountRepository AccountRepository => _accountRepository ??= new AccountRepository(_context);
 
         public async Task<int> SaveChangesAsync()
         {

@@ -1,4 +1,5 @@
-using FluentValidation;
+using Presentation.Dto.Category;
+using Presentation.Dto.Product;using FluentValidation;
 
 namespace Application
 {

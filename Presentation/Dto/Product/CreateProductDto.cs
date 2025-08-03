@@ -1,4 +1,5 @@
-namespace Application
+using Presentation.Dto.Category;
+using Presentation.Dto.Product;namespace Presentation.Dto.Product
 {
     public class CreateProductDto
     {
@@ -9,6 +10,5 @@ namespace Application
 
         //foreign key
         public Guid CategoryId { get; set; }
-
     }
 }

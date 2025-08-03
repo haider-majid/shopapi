@@ -1,9 +1,10 @@
 
-
-using Microsoft.AspNetCore.Http.HttpResults;
+using Domain.Entities;
+using Domain.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using Infrastructure.Data;
 
-namespace Infrastructure
+namespace Infrastructure.Repositories
 {
     public class CategoryRepository : ICategoryRepository
     {
@@ -39,12 +40,9 @@ namespace Infrastructure
             }
         }
 
-        public async Task<Category> GetByIdAsync(Guid id)
+        public async Task<Category?> GetByIdAsync(Guid id)
         {
-            var category = await _context.Categories.FindAsync(id);
-            if (category == null)
-                return null;
-            return category;
+            return await _context.Categories.FindAsync(id);
         }
     }
 }

@@ -1,6 +1,7 @@
-using FluentValidation;
-using Application;
-using Presentation.Dto.Profile;
+using Presentation.Dto.Category;
+using Presentation.Dto.Product;using FluentValidation;
+using Presentation.Dto.Category;
+using Presentation.Dto.Product;
 
 namespace Application.Services
 {
@@ -10,23 +11,17 @@ namespace Application.Services
         private readonly IValidator<UpdateCategoryDto> _updateCategoryValidator;
         private readonly IValidator<CreateProductDto> _createProductValidator;
         private readonly IValidator<UpdateProductDto> _updateProductValidator;
-        private readonly IValidator<CreateAccountDto> _createAccountValidator;
-        private readonly IValidator<UpdateAccountDto> _updateAccountValidator;
 
         public ValidationService(
             IValidator<CreateCategoryDto> createCategoryValidator,
             IValidator<UpdateCategoryDto> updateCategoryValidator,
             IValidator<CreateProductDto> createProductValidator,
-            IValidator<UpdateProductDto> updateProductValidator,
-            IValidator<CreateAccountDto> createAccountValidator,
-            IValidator<UpdateAccountDto> updateAccountValidator)
+            IValidator<UpdateProductDto> updateProductValidator)
         {
             _createCategoryValidator = createCategoryValidator;
             _updateCategoryValidator = updateCategoryValidator;
             _createProductValidator = createProductValidator;
             _updateProductValidator = updateProductValidator;
-            _createAccountValidator = createAccountValidator;
-            _updateAccountValidator = updateAccountValidator;
         }
 
         public async Task ValidateAsync(CreateCategoryDto dto)
@@ -57,19 +52,7 @@ namespace Application.Services
                 throw new ValidationException(result.Errors);
         }
 
-        public async Task ValidateAsync(CreateAccountDto dto)
-        {
-            var result = await _createAccountValidator.ValidateAsync(dto);
-            if (!result.IsValid)
-                throw new ValidationException(result.Errors);
-        }
 
-        public async Task ValidateAsync(UpdateAccountDto dto)
-        {
-            var result = await _updateAccountValidator.ValidateAsync(dto);
-            if (!result.IsValid)
-                throw new ValidationException(result.Errors);
-        }
 
     }
 }

@@ -1,4 +1,5 @@
-namespace Application
+using Presentation.Dto.Category;
+using Presentation.Dto.Product;namespace Presentation.Dto.Product
 {
     public class GetProductDto
     {
@@ -9,9 +10,7 @@ namespace Application
         public int Stock { get; set; }
 
         //foreign key
-
         public Guid CategoryId { get; set; }
         public string CategoryName { get; set; } = string.Empty;
-
     }
 }

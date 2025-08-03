@@ -1,10 +1,9 @@
 using Microsoft.AspNetCore.Mvc;
-using Application.Services;
 using AutoMapper;
-using FluentValidation;
-using Application;
 using MediatR;
 using Application.Commands.Product;
+using Application.Queries.Product;
+using Presentation.Dto.Product;
 
 namespace Presentation.Controllers
 {

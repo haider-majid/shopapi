@@ -2,19 +2,23 @@ using MediatR;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using Application;
 using Application.Services;
+using Application.Queries.Product;
+using Presentation.Dto.Product;
 
-public class GetAllProductsQueryHandler : IRequestHandler<GetAllProductsQuery, IEnumerable<GetProductDto>>
+namespace Application.Handlers.Queries.Product
 {
-    private readonly IProductService _productService;
-    public GetAllProductsQueryHandler(IProductService productService)
+    public class GetAllProductsQueryHandler : IRequestHandler<GetAllProductsQuery, IEnumerable<GetProductDto>>
     {
-        _productService = productService;
-    }
-    public async Task<IEnumerable<GetProductDto>> Handle(GetAllProductsQuery request, CancellationToken cancellationToken)
-    {
-        var products = await _productService.GetAllAsync();
-        return products;
+        private readonly IProductService _productService;
+        public GetAllProductsQueryHandler(IProductService productService)
+        {
+            _productService = productService;
+        }
+        public async Task<IEnumerable<GetProductDto>> Handle(GetAllProductsQuery request, CancellationToken cancellationToken)
+        {
+            var products = await _productService.GetAllAsync();
+            return products;
+        }
     }
 }

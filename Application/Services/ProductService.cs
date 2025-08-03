@@ -1,7 +1,9 @@
 using AutoMapper;
-using Domain;
-using Application;
 using Domain.Interfaces;
+using Domain.Entities;
+using Domain.ValueObjects;
+using Presentation.Dto.Category;
+using Presentation.Dto.Product;
 
 namespace Application.Services
 {
@@ -53,9 +55,10 @@ namespace Application.Services
         {
             await _validationService.ValidateAsync(dto);
 
-            var product = _mapper.Map<Product>(dto);
-            if (product.Id == Guid.Empty)
-                product.Id = Guid.NewGuid();
+            var productName = new ProductName(dto.Name);
+            var price = new Money(dto.Price);
+            var product = Product.Create(productName, dto.Description, price, dto.Stock, dto.CategoryId);
+
             var created = await _unitOfWork.ProductRepository.AddAsync(product);
             await _unitOfWork.SaveChangesAsync();
 
@@ -73,14 +76,27 @@ namespace Application.Services
             if (existingProduct == null)
                 return false;
 
-            if (dto.Name != null)
-                existingProduct.Name = dto.Name;
-            if (dto.Description != null)
-                existingProduct.Description = dto.Description;
+            if (dto.Name != null || dto.Description != null)
+            {
+                var productName = dto.Name != null ? new ProductName(dto.Name) : existingProduct.Name;
+                var description = dto.Description ?? existingProduct.Description;
+                existingProduct.UpdateDetails(productName, description);
+            }
+
             if (dto.Price != null)
-                existingProduct.Price = dto.Price.Value;
+            {
+                var newPrice = new Money(dto.Price.Value);
+                existingProduct.UpdatePrice(newPrice);
+            }
+
             if (dto.Stock != null)
-                existingProduct.Stock = dto.Stock.Value;
+            {
+                var stockDifference = dto.Stock.Value - existingProduct.Stock;
+                if (stockDifference != 0)
+                {
+                    existingProduct.AdjustStock(stockDifference, "Manual stock adjustment");
+                }
+            }
 
             await _unitOfWork.ProductRepository.UpdateAsync(existingProduct);
             await _unitOfWork.SaveChangesAsync();

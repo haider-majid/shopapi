@@ -1,5 +1,6 @@
-using Application;
-using Presentation.Dto.Profile;
+using Presentation.Dto.Category;
+using Presentation.Dto.Product;using Presentation.Dto.Category;
+using Presentation.Dto.Product;
 
 namespace Application.Services
 {
@@ -9,8 +10,6 @@ namespace Application.Services
         Task ValidateAsync(UpdateCategoryDto dto);
         Task ValidateAsync(CreateProductDto dto);
         Task ValidateAsync(UpdateProductDto dto);
-        Task ValidateAsync(CreateAccountDto dto);
-        Task ValidateAsync(UpdateAccountDto dto);
     }
 }
 
