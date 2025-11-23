@@ -47,5 +47,14 @@ namespace Presentation.Controllers
                 return NotFound();
             return Ok(updatedProduct);
         }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete(Guid id)
+        {
+            var result = await _mediator.Send(new DeleteProductCommand(id));
+            if (!result)
+                return NotFound();
+            return NoContent();
+        }
     }
 }
