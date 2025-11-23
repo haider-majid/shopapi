@@ -2212,11 +2212,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "/Users/haidermajid/Desktop/storeapi/storeapi.csproj",
+      "projectUniqueName": "/Users/haidermajid/Desktop/shopapi/storeapi.csproj",
       "projectName": "storeapi",
-      "projectPath": "/Users/haidermajid/Desktop/storeapi/storeapi.csproj",
+      "projectPath": "/Users/haidermajid/Desktop/shopapi/storeapi.csproj",
       "packagesPath": "/Users/haidermajid/.nuget/packages/",
-      "outputPath": "/Users/haidermajid/Desktop/storeapi/obj/",
+      "outputPath": "/Users/haidermajid/Desktop/shopapi/obj/",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "/Users/haidermajid/.nuget/NuGet/NuGet.Config"
