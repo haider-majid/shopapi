@@ -90,7 +90,12 @@ namespace Domain.Entities
         }
 
         // EF Core constructor
-        private Product() : base(Guid.NewGuid()) { }
+        private Product() : base(Guid.NewGuid()) 
+        {
+            Name = null!;
+            Description = null!;
+            Price = null!;
+        }
     }
 }
 

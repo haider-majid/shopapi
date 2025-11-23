@@ -26,13 +26,14 @@ namespace Infrastructure.Repositories
 
         public async Task<Product> AddAsync(Product product)
         {
-            _context.Products.Add(product);
+            await _context.Products.AddAsync(product);
             return product;
         }
 
-        public async Task UpdateAsync(Product product)
+        public Task UpdateAsync(Product product)
         {
             _context.Products.Update(product);
+            return Task.CompletedTask;
         }
 
         public async Task DeleteAsync(Guid id)

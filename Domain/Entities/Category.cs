@@ -56,6 +56,9 @@ namespace Domain.Entities
         }
 
         // EF Core constructor
-        private Category() : base(Guid.NewGuid()) { }
+        private Category() : base(Guid.NewGuid()) 
+        {
+            Name = null!;
+        }
     }
 }

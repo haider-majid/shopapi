@@ -22,13 +22,14 @@ namespace Infrastructure.Repositories
 
         public async Task<Category> AddAsync(Category category)
         {
-            _context.Categories.Add(category);
+            await _context.Categories.AddAsync(category);
             return category;
         }
 
-        public async Task UpdateAsync(Category category)
+        public Task UpdateAsync(Category category)
         {
             _context.Categories.Update(category);
+            return Task.CompletedTask;
         }
 
         public async Task DeleteAsync(Guid id)
