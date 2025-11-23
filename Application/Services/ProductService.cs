@@ -12,37 +12,21 @@ namespace Application.Services
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
         private readonly IValidationService _validationService;
-        private readonly ICacheService _cacheService;
 
         public ProductService(
             IUnitOfWork unitOfWork,
             IMapper mapper,
-            IValidationService validationService,
-            ICacheService cacheService)
+            IValidationService validationService)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
             _validationService = validationService;
-            _cacheService = cacheService;
         }
 
         public async Task<IEnumerable<GetProductDto>> GetAllAsync()
         {
-            var cacheKey = _cacheService.GenerateKey("product", "getall");
-
-            // Try to get from cache first
-            var cachedProducts = await _cacheService.GetAsync<IEnumerable<GetProductDto>>(cacheKey);
-            if (cachedProducts != null)
-                return cachedProducts;
-
-            // If not in cache, get from database
             var products = await _unitOfWork.ProductRepository.GetAllAsync();
-            var productDtos = _mapper.Map<IEnumerable<GetProductDto>>(products);
-
-            // Cache the result
-            await _cacheService.SetAsync(cacheKey, productDtos);
-
-            return productDtos;
+            return _mapper.Map<IEnumerable<GetProductDto>>(products);
         }
 
         public async Task<GetProductDto?> GetByIdAsync(Guid id)
@@ -61,9 +45,6 @@ namespace Application.Services
 
             var created = await _unitOfWork.ProductRepository.AddAsync(product);
             await _unitOfWork.SaveChangesAsync();
-
-            // Invalidate cache after creating new product
-            await InvalidateProductCache();
 
             return _mapper.Map<GetProductDto>(created);
         }
@@ -101,9 +82,6 @@ namespace Application.Services
             await _unitOfWork.ProductRepository.UpdateAsync(existingProduct);
             await _unitOfWork.SaveChangesAsync();
 
-            // Invalidate cache after updating product
-            await InvalidateProductCache();
-
             return true;
         }
 
@@ -116,16 +94,7 @@ namespace Application.Services
             await _unitOfWork.ProductRepository.DeleteAsync(id);
             await _unitOfWork.SaveChangesAsync();
 
-            // Invalidate cache after deleting product
-            await InvalidateProductCache();
-
             return true;
-        }
-
-        private async Task InvalidateProductCache()
-        {
-            var cacheKey = _cacheService.GenerateKey("product", "getall");
-            await _cacheService.RemoveAsync(cacheKey);
         }
     }
 }

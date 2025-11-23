@@ -41,8 +41,18 @@ builder.Services.AddScoped<IDomainEventDispatcher, DomainEventDispatcher>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
 // Services
-builder.Services.AddScoped<IProductService, ProductService>();
-builder.Services.AddScoped<ICategoryService, CategoryService>();
+builder.Services.AddScoped<ProductService>();
+builder.Services.AddScoped<IProductService>(provider => 
+    new CachedProductService(
+        provider.GetRequiredService<ProductService>(),
+        provider.GetRequiredService<ICacheService>()));
+
+builder.Services.AddScoped<CategoryService>();
+builder.Services.AddScoped<ICategoryService>(provider => 
+    new CachedCategoryService(
+        provider.GetRequiredService<CategoryService>(),
+        provider.GetRequiredService<ICacheService>()));
+
 builder.Services.AddScoped<IValidationService, ValidationService>();
 
 // AutoMapper
