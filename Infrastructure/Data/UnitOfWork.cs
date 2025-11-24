@@ -11,6 +11,7 @@ namespace Infrastructure.Data
         private readonly ShopDbContext _context;
         private IProductRepository? _productRepository;
         private ICategoryRepository? _categoryRepository;
+        private IBrandRepository? _brandRepository;
 
         public UnitOfWork(ShopDbContext context)
         {
@@ -19,6 +20,7 @@ namespace Infrastructure.Data
 
         public IProductRepository ProductRepository => _productRepository ??= new ProductRepository(_context);
         public ICategoryRepository CategoryRepository => _categoryRepository ??= new CategoryRepository(_context);
+        public IBrandRepository BrandRepository => _brandRepository ??= new BrandRepository(_context);
 
         public async Task<int> SaveChangesAsync()
         {

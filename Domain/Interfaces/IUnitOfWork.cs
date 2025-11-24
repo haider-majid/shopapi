@@ -6,6 +6,7 @@ namespace Domain.Interfaces
     {
         IProductRepository ProductRepository { get; }
         ICategoryRepository CategoryRepository { get; }
+        IBrandRepository BrandRepository { get; }
         Task<int> SaveChangesAsync();
     }
 }

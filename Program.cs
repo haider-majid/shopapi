@@ -13,6 +13,7 @@ using Application.Mappings;
 using Application;
 using Infrastructure.Repositories;
 using MediatR;
+using Application.Validation;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -20,7 +21,7 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-// Redis Configuration
+// Redis Configuration 
 builder.Services.AddStackExchangeRedisCache(options =>
 {
     options.Configuration = builder.Configuration.GetConnectionString("Redis") ?? "localhost:6379";
@@ -53,11 +54,18 @@ builder.Services.AddScoped<ICategoryService>(provider =>
         provider.GetRequiredService<CategoryService>(),
         provider.GetRequiredService<ICacheService>()));
 
+builder.Services.AddScoped<BrandService>();
+builder.Services.AddScoped<IBrandService>(provider => 
+    new CachedBrandService(
+        provider.GetRequiredService<BrandService>(),
+        provider.GetRequiredService<ICacheService>()));
+
 builder.Services.AddScoped<IValidationService, ValidationService>();
 
 // AutoMapper
 builder.Services.AddAutoMapper(typeof(ProductProfile));
 builder.Services.AddAutoMapper(typeof(CategoryProfile));
+builder.Services.AddAutoMapper(typeof(BrandProfile));
 
 // MediatR
 builder.Services.AddMediatR(typeof(Application.Commands.Product.CreateProductCommand).Assembly);
@@ -65,6 +73,7 @@ builder.Services.AddMediatR(typeof(Application.Commands.Product.CreateProductCom
 // Validation
 builder.Services.AddValidatorsFromAssemblyContaining<CreateProductValidator>();
 builder.Services.AddValidatorsFromAssemblyContaining<CreateCategoryValidator>();
+builder.Services.AddValidatorsFromAssemblyContaining<CreateBrandValidator>();
 builder.Services.AddFluentValidationAutoValidation();
 
 var app = builder.Build();
