@@ -9,8 +9,8 @@ namespace Infrastructure.Data
     public class UnitOfWork : IUnitOfWork
     {
         private readonly ShopDbContext _context;
-        private IProductRepository _productRepository;
-        private ICategoryRepository _categoryRepository;
+        private IProductRepository? _productRepository;
+        private ICategoryRepository? _categoryRepository;
 
         public UnitOfWork(ShopDbContext context)
         {

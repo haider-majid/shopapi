@@ -16,6 +16,7 @@ namespace Application.Common
         public async Task DispatchAsync(IEnumerable<IDomainEvent> domainEvents)
         {
             foreach (var domainEvent in domainEvents)
+                
             {
                 await _mediator.Publish(domainEvent);
             }

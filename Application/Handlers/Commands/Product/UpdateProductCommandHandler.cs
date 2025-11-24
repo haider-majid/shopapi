@@ -1,9 +1,8 @@
 using Presentation.Dto.Category;
-using Presentation.Dto.Product;using MediatR;
+using Presentation.Dto.Product;
+using MediatR;
 using System.Threading;
 using System.Threading.Tasks;
-using Presentation.Dto.Category;
-using Presentation.Dto.Product;
 using Application.Services;
 using Application.Commands.Product;
 
