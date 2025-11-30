@@ -10,6 +10,7 @@ namespace Presentation.Controllers
     public class BrandController : BaseController
     {
         private readonly IMediator _mediator;
+        
 
         public BrandController(IMapper mapper, IMediator mediator) : base(mapper)
         {

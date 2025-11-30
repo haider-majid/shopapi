@@ -2,7 +2,7 @@ using System.Threading.Tasks;
 using Domain.Entities;
 using Domain.Interfaces;
 using Infrastructure.Repositories;
-using Infrastructure.Data;
+
 
 namespace Infrastructure.Data
 {

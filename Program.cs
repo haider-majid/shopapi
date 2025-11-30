@@ -1,19 +1,6 @@
-using Infrastructure.Data;
-using Domain.Entities;
-using Presentation.Dto.Category;
-using Presentation.Dto.Product;
-using Application.Services;
-using Application.Common;
-using Application.Middleware;
-using FluentValidation;
-using FluentValidation.AspNetCore;
-using Microsoft.EntityFrameworkCore;
-using Domain.Interfaces;
-using Application.Mappings;
 using Application;
-using Infrastructure.Repositories;
-using MediatR;
-using Application.Validation;
+using Application.Middleware;
+using Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -21,60 +8,8 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-// Redis Configuration 
-builder.Services.AddStackExchangeRedisCache(options =>
-{
-    options.Configuration = builder.Configuration.GetConnectionString("Redis") ?? "localhost:6379";
-    options.InstanceName = "StoreAPI_";
-});
-
-// Database
-builder.Services.AddDbContext<ShopDbContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
-
-// Cache Service
-builder.Services.AddScoped<ICacheService, RedisCacheService>();
-
-// Domain Event Dispatcher
-builder.Services.AddScoped<IDomainEventDispatcher, DomainEventDispatcher>();
-
-// UnitOfWork
-builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
-
-// Services
-builder.Services.AddScoped<ProductService>();
-builder.Services.AddScoped<IProductService>(provider => 
-    new CachedProductService(
-        provider.GetRequiredService<ProductService>(),
-        provider.GetRequiredService<ICacheService>()));
-
-builder.Services.AddScoped<CategoryService>();
-builder.Services.AddScoped<ICategoryService>(provider => 
-    new CachedCategoryService(
-        provider.GetRequiredService<CategoryService>(),
-        provider.GetRequiredService<ICacheService>()));
-
-builder.Services.AddScoped<BrandService>();
-builder.Services.AddScoped<IBrandService>(provider => 
-    new CachedBrandService(
-        provider.GetRequiredService<BrandService>(),
-        provider.GetRequiredService<ICacheService>()));
-
-builder.Services.AddScoped<IValidationService, ValidationService>();
-
-// AutoMapper
-builder.Services.AddAutoMapper(typeof(ProductProfile));
-builder.Services.AddAutoMapper(typeof(CategoryProfile));
-builder.Services.AddAutoMapper(typeof(BrandProfile));
-
-// MediatR
-builder.Services.AddMediatR(typeof(Application.Commands.Product.CreateProductCommand).Assembly);
-
-// Validation
-builder.Services.AddValidatorsFromAssemblyContaining<CreateProductValidator>();
-builder.Services.AddValidatorsFromAssemblyContaining<CreateCategoryValidator>();
-builder.Services.AddValidatorsFromAssemblyContaining<CreateBrandValidator>();
-builder.Services.AddFluentValidationAutoValidation();
+builder.Services.AddInfrastructure(builder.Configuration);
+builder.Services.AddApplication();
 
 var app = builder.Build();
 
@@ -92,4 +27,3 @@ app.UseHttpsRedirection();
 app.MapControllers();
 
 app.Run();
-
