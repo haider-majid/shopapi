@@ -1,9 +1,7 @@
-namespace Domain.Exceptions
+namespace Domain.Exceptions;
+public sealed class InvalidMoneyException : DomainException
 {
-    public sealed class InvalidMoneyException : DomainException
+    public InvalidMoneyException(string message) : base(message)
     {
-        public InvalidMoneyException(string message) : base(message)
-        {
-        }
     }
 }

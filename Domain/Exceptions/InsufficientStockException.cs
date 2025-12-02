@@ -1,9 +1,7 @@
-namespace Domain.Exceptions
+namespace Domain.Exceptions;
+public sealed class InsufficientStockException : DomainException
 {
-    public sealed class InsufficientStockException : DomainException
+    public InsufficientStockException(string message) : base(message)
     {
-        public InsufficientStockException(string message) : base(message)
-        {
-        }
     }
 }

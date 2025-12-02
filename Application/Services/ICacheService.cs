@@ -1,14 +1,13 @@
 using Presentation.Dto.Category;
 using Presentation.Dto.Product;using System.Text.Json;
 
-namespace Application.Services
+namespace Application.Services;
+
+public interface ICacheService
 {
-    public interface ICacheService
-    {
-        Task<T?> GetAsync<T>(string key);
-        Task SetAsync<T>(string key, T value, TimeSpan? expiration = null);
-        Task RemoveAsync(string key);
-        Task RemoveByPatternAsync(string pattern);
-        string GenerateKey(string entity, string operation, params object[] parameters);
-    }
+    Task<T?> GetAsync<T>(string key);
+    Task SetAsync<T>(string key, T value, TimeSpan? expiration = null);
+    Task RemoveAsync(string key);
+    Task RemoveByPatternAsync(string pattern);
+    string GenerateKey(string entity, string operation, params object[] parameters);
 }

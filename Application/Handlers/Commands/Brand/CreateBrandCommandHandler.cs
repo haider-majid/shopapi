@@ -3,20 +3,19 @@ using Application.Services;
 using Application.Commands.Brand;
 using Presentation.Dto.Brand;
 
-namespace Application.Handlers.Commands.Brand
+namespace Application.Handlers.Commands.Brand;
+
+public class CreateBrandCommandHandler : IRequestHandler<CreateBrandCommand, GetBrandDto>
 {
-    public class CreateBrandCommandHandler : IRequestHandler<CreateBrandCommand, GetBrandDto>
+    private readonly IBrandService _brandService;
+
+    public CreateBrandCommandHandler(IBrandService brandService)
     {
-        private readonly IBrandService _brandService;
+        _brandService = brandService;
+    }
 
-        public CreateBrandCommandHandler(IBrandService brandService)
-        {
-            _brandService = brandService;
-        }
-
-        public async Task<GetBrandDto> Handle(CreateBrandCommand request, CancellationToken cancellationToken)
-        {
-            return await _brandService.CreateAsync(request.Dto);
-        }
+    public async Task<GetBrandDto> Handle(CreateBrandCommand request, CancellationToken cancellationToken)
+    {
+        return await _brandService.CreateAsync(request.Dto);
     }
 }

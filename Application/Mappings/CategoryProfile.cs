@@ -3,13 +3,12 @@ using Presentation.Dto.Product;
 using AutoMapper;
 using Domain.Entities;
 
-namespace Application.Mappings
+namespace Application.Mappings;
+
+public class CategoryProfile : Profile
 {
-    public class CategoryProfile : Profile
+    public CategoryProfile()
     {
-        public CategoryProfile()
-        {
-            CreateMap<Category, GetCategoryDto>();
-        }
+        CreateMap<Category, GetCategoryDto>();
     }
 }

@@ -2,64 +2,63 @@ using Presentation.Dto.Category;
 using Presentation.Dto.Product;using Microsoft.Extensions.Caching.Distributed;
 using System.Text.Json;
 
-namespace Application.Services
+namespace Application.Services;
+
+public class RedisCacheService : ICacheService
 {
-    public class RedisCacheService : ICacheService
+    private readonly IDistributedCache _cache;
+    private readonly TimeSpan _defaultExpiration = TimeSpan.FromMinutes(30);
+
+    public RedisCacheService(IDistributedCache cache)
     {
-        private readonly IDistributedCache _cache;
-        private readonly TimeSpan _defaultExpiration = TimeSpan.FromMinutes(30);
+        _cache = cache;
+    }
 
-        public RedisCacheService(IDistributedCache cache)
+    public async Task<T?> GetAsync<T>(string key)
+    {
+        var cachedValue = await _cache.GetStringAsync(key);
+        if (string.IsNullOrEmpty(cachedValue))
+            return default;
+
+        try
         {
-            _cache = cache;
+            return JsonSerializer.Deserialize<T>(cachedValue);
         }
-
-        public async Task<T?> GetAsync<T>(string key)
+        catch
         {
-            var cachedValue = await _cache.GetStringAsync(key);
-            if (string.IsNullOrEmpty(cachedValue))
-                return default;
-
-            try
-            {
-                return JsonSerializer.Deserialize<T>(cachedValue);
-            }
-            catch
-            {
-                return default;
-            }
+            return default;
         }
+    }
 
-        public async Task SetAsync<T>(string key, T value, TimeSpan? expiration = null)
+    public async Task SetAsync<T>(string key, T value, TimeSpan? expiration = null)
+    {
+        var options = new DistributedCacheEntryOptions
         {
-            var options = new DistributedCacheEntryOptions
-            {
-                AbsoluteExpirationRelativeToNow = expiration ?? _defaultExpiration
-            };
+            AbsoluteExpirationRelativeToNow = expiration ?? _defaultExpiration
+        };
 
-            var serializedValue = JsonSerializer.Serialize(value);
-            await _cache.SetStringAsync(key, serializedValue, options);
-        }
+        var serializedValue = JsonSerializer.Serialize(value);
+        await _cache.SetStringAsync(key, serializedValue, options);
+    }
 
-        public async Task RemoveAsync(string key)
+    public async Task RemoveAsync(string key)
+    {
+        await _cache.RemoveAsync(key);
+    }
+
+    public async Task RemoveByPatternAsync(string pattern)
+    {
+
+        await _cache.RemoveAsync(pattern);
+    }
+
+    public string GenerateKey(string entity, string operation, params object[] parameters)
+    {
+        var key = $"{entity}:{operation}";
+        if (parameters.Length > 0)
         {
-            await _cache.RemoveAsync(key);
+            key += ":" + string.Join(":", parameters);
         }
-
-        public async Task RemoveByPatternAsync(string pattern)
-        {
-
-            await _cache.RemoveAsync(pattern);
-        }
-
-        public string GenerateKey(string entity, string operation, params object[] parameters)
-        {
-            var key = $"{entity}:{operation}";
-            if (parameters.Length > 0)
-            {
-                key += ":" + string.Join(":", parameters);
-            }
-            return key.ToLowerInvariant();
-        }
+        return key.ToLowerInvariant();
     }
 }

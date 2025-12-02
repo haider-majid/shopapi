@@ -1,18 +1,17 @@
 using FluentValidation;
 using Presentation.Dto.Brand;
 
-namespace Application.Validation
-{
-    public class CreateBrandValidator : AbstractValidator<CreateBrandDto>
-    {
-        public CreateBrandValidator()
-        {
-            RuleFor(x => x.Name)
-                .NotEmpty().WithMessage("Name is required")
-                .MaximumLength(50).WithMessage("Name must not exceed 50 characters");
+namespace Application.Validation;
 
-            RuleFor(x => x.Description)
-                .MaximumLength(250).WithMessage("Description must not exceed 250 characters");
-        }
+public class CreateBrandValidator : AbstractValidator<CreateBrandDto>
+{
+    public CreateBrandValidator()
+    {
+        RuleFor(x => x.Name)
+            .NotEmpty().WithMessage("Name is required")
+            .MaximumLength(50).WithMessage("Name must not exceed 50 characters");
+
+        RuleFor(x => x.Description)
+            .MaximumLength(250).WithMessage("Description must not exceed 250 characters");
     }
 }

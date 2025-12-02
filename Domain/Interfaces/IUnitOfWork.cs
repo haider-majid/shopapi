@@ -1,12 +1,10 @@
 using System.Threading.Tasks;
 
-namespace Domain.Interfaces
+namespace Domain.Interfaces;
+public interface IUnitOfWork
 {
-    public interface IUnitOfWork
-    {
-        IProductRepository ProductRepository { get; }
-        ICategoryRepository CategoryRepository { get; }
-        IBrandRepository BrandRepository { get; }
-        Task<int> SaveChangesAsync();
-    }
+    IProductRepository ProductRepository { get; }
+    ICategoryRepository CategoryRepository { get; }
+    IBrandRepository BrandRepository { get; }
+    Task<int> SaveChangesAsync();
 }

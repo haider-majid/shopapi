@@ -1,7 +1,5 @@
-namespace Domain.Common
+namespace Domain.Common;
+public abstract record DomainEvent : IDomainEvent
 {
-    public abstract record DomainEvent : IDomainEvent
-    {
-        public DateTime OccurredOn { get; } = DateTime.UtcNow;
-    }
+    public DateTime OccurredOn { get; } = DateTime.UtcNow;
 }

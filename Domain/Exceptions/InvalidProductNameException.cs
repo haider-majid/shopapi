@@ -1,9 +1,7 @@
-namespace Domain.Exceptions
+namespace Domain.Exceptions;
+public sealed class InvalidProductNameException : DomainException
 {
-    public sealed class InvalidProductNameException : DomainException
+    public InvalidProductNameException(string message) : base(message)
     {
-        public InvalidProductNameException(string message) : base(message)
-        {
-        }
     }
 }

@@ -1,6 +1,5 @@
 using MediatR;
 
-namespace Application.Commands.Brand
-{
-    public record DeleteBrandCommand(Guid Id) : IRequest<bool>;
-}
+namespace Application.Commands.Brand;
+
+public record DeleteBrandCommand(Guid Id) : IRequest<bool>;

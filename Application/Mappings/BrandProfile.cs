@@ -2,13 +2,12 @@ using AutoMapper;
 using Domain.Entities;
 using Presentation.Dto.Brand;
 
-namespace Application.Mappings
+namespace Application.Mappings;
+
+public class BrandProfile : Profile
 {
-    public class BrandProfile : Profile
+    public BrandProfile()
     {
-        public BrandProfile()
-        {
-            CreateMap<Brand, GetBrandDto>();
-        }
+        CreateMap<Brand, GetBrandDto>();
     }
 }

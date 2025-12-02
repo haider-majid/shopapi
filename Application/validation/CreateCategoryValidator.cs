@@ -1,13 +1,12 @@
 using Presentation.Dto.Category;
 using Presentation.Dto.Product;using FluentValidation;
 
-namespace Application
+namespace Application;
+
+public class CreateCategoryValidator : AbstractValidator<CreateCategoryDto>
 {
-    public class CreateCategoryValidator : AbstractValidator<CreateCategoryDto>
+    public CreateCategoryValidator()
     {
-        public CreateCategoryValidator()
-        {
-            RuleFor(x => x.Name).NotEmpty().MaximumLength(100);
-        }
+        RuleFor(x => x.Name).NotEmpty().MaximumLength(100);
     }
 }
