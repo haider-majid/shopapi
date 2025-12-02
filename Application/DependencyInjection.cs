@@ -1,60 +1,54 @@
-using Microsoft.Extensions.DependencyInjection;
-using Application.Services;
 using Application.Common;
-using Application.Validation;
 using Application.Mappings;
+using Application.Services;
+using Application.Validation;
 using FluentValidation;
 using FluentValidation.AspNetCore;
 using MediatR;
-using Application.Commands.Product; // For CreateProductCommand
+using Microsoft.Extensions.DependencyInjection;
 
-namespace Application
+namespace Application;
+
+public static class DependencyInjection
 {
-    public static class DependencyInjection
+    public static IServiceCollection AddApplication(this IServiceCollection services)
     {
-        public static IServiceCollection AddApplication(this IServiceCollection services)
-        {
-            // Services
-            services.AddScoped<ProductService>();
-            services.AddScoped<CategoryService>();
-            services.AddScoped<BrandService>();
+        // Core Services
+        services.AddScoped<ProductService>();
+        services.AddScoped<CategoryService>();
+        services.AddScoped<BrandService>();
 
-            // Cached Services (Decorators)
-            services.AddScoped<IProductService>(provider => 
-                new CachedProductService(
-                    provider.GetRequiredService<ProductService>(),
-                    provider.GetRequiredService<ICacheService>()));
+        // Cached Services (Decorators)
+        services.AddScoped<IProductService>(provider => 
+            new CachedProductService(
+                provider.GetRequiredService<ProductService>(),
+                provider.GetRequiredService<ICacheService>()));
 
-            services.AddScoped<ICategoryService>(provider => 
-                new CachedCategoryService(
-                    provider.GetRequiredService<CategoryService>(),
-                    provider.GetRequiredService<ICacheService>()));
+        services.AddScoped<ICategoryService>(provider => 
+            new CachedCategoryService(
+                provider.GetRequiredService<CategoryService>(),
+                provider.GetRequiredService<ICacheService>()));
 
-            services.AddScoped<IBrandService>(provider => 
-                new CachedBrandService(
-                    provider.GetRequiredService<BrandService>(),
-                    provider.GetRequiredService<ICacheService>()));
+        services.AddScoped<IBrandService>(provider => 
+            new CachedBrandService(
+                provider.GetRequiredService<BrandService>(),
+                provider.GetRequiredService<ICacheService>()));
 
-            // Cache Service
-            services.AddScoped<ICacheService, RedisCacheService>();
+        // Infrastructure Services
+        services.AddScoped<ICacheService, RedisCacheService>();
+        services.AddScoped<IDomainEventDispatcher, DomainEventDispatcher>();
 
-            // Domain Event Dispatcher
-            services.AddScoped<IDomainEventDispatcher, DomainEventDispatcher>();
+        // Validation
+        services.AddScoped<IValidationService, ValidationService>();
+        services.AddValidatorsFromAssembly(typeof(DependencyInjection).Assembly);
+        services.AddFluentValidationAutoValidation();
 
-            // Validation Service
-            services.AddScoped<IValidationService, ValidationService>();
+        // AutoMapper
+        services.AddAutoMapper(typeof(ProductProfile).Assembly);
 
-            // AutoMapper
-            services.AddAutoMapper(typeof(ProductProfile).Assembly);
+        // MediatR
+        services.AddMediatR(typeof(DependencyInjection).Assembly);
 
-            // MediatR
-            services.AddMediatR(typeof(CreateProductCommand).Assembly);
-
-            // Validation
-            services.AddValidatorsFromAssembly(typeof(CreateProductValidator).Assembly);
-            services.AddFluentValidationAutoValidation();
-
-            return services;
-        }
+        return services;
     }
 }
