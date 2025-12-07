@@ -15,7 +15,7 @@ public class Product : AggregateRoot
     // Navigation Property
     public Category? Category { get; set; }
 
-    private Product(Guid id, ProductName name, string description, Money price, int stock, Guid categoryId) 
+    private Product(Guid id, ProductName name, string description, Money price, int stock, Guid categoryId)
         : base(id)
     {
         Name = name;
@@ -32,12 +32,12 @@ public class Product : AggregateRoot
 
         var productId = Guid.NewGuid();
         var product = new Product(productId, name, description, price, initialStock, categoryId);
-        
+
         product.AddDomainEvent(new ProductCreatedEvent(
-            productId, 
-            name.Value, 
-            price.Amount, 
-            initialStock, 
+            productId,
+            name.Value,
+            price.Amount,
+            initialStock,
             categoryId));
 
         return product;
@@ -47,7 +47,7 @@ public class Product : AggregateRoot
     {
         var oldPrice = Price.Amount;
         Price = newPrice;
-        
+
         AddDomainEvent(new ProductPriceChangedEvent(Id, oldPrice, newPrice.Amount));
     }
 
@@ -55,12 +55,12 @@ public class Product : AggregateRoot
     {
         var oldStock = Stock;
         var newStock = Stock + quantity;
-        
+
         if (newStock < 0)
             throw new InsufficientStockException($"Cannot reduce stock below zero. Current stock: {Stock}, attempted adjustment: {quantity}");
 
         Stock = newStock;
-        
+
         AddDomainEvent(new ProductStockChangedEvent(Id, oldStock, newStock, reason));
     }
 
@@ -73,7 +73,7 @@ public class Product : AggregateRoot
     {
         if (quantity <= 0)
             throw new ArgumentException("Quantity must be positive", nameof(quantity));
-            
+
         AdjustStock(quantity, "Stock increase");
     }
 
@@ -89,11 +89,10 @@ public class Product : AggregateRoot
     }
 
     // EF Core constructor
-    private Product() : base(Guid.NewGuid()) 
+    private Product() : base(Guid.NewGuid())
     {
         Name = null!;
         Description = null!;
         Price = null!;
     }
 }
-

@@ -13,5 +13,3 @@ public class ProductProfile : Profile
             .ForMember(dest => dest.Price, opt => opt.MapFrom(src => src.Price.Amount));
     }
 }
-
-

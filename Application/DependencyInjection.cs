@@ -19,17 +19,17 @@ public static class DependencyInjection
         services.AddScoped<BrandService>();
 
         // Cached Services (Decorators)
-        services.AddScoped<IProductService>(provider => 
+        services.AddScoped<IProductService>(provider =>
             new CachedProductService(
                 provider.GetRequiredService<ProductService>(),
                 provider.GetRequiredService<ICacheService>()));
 
-        services.AddScoped<ICategoryService>(provider => 
+        services.AddScoped<ICategoryService>(provider =>
             new CachedCategoryService(
                 provider.GetRequiredService<CategoryService>(),
                 provider.GetRequiredService<ICacheService>()));
 
-        services.AddScoped<IBrandService>(provider => 
+        services.AddScoped<IBrandService>(provider =>
             new CachedBrandService(
                 provider.GetRequiredService<BrandService>(),
                 provider.GetRequiredService<ICacheService>()));

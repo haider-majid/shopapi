@@ -44,7 +44,7 @@ public class BrandService : IBrandService
             return false;
 
         brand.Update(dto.Name, dto.Description);
-        
+
         await _unitOfWork.BrandRepository.UpdateAsync(brand);
         await _unitOfWork.SaveChangesAsync();
 

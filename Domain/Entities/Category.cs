@@ -7,7 +7,7 @@ namespace Domain.Entities;
 public class Category : AggregateRoot
 {
     public string Name { get; private set; }
-    
+
     // Navigation Property
     public List<Product> Products { get; set; } = new List<Product>();
 
@@ -29,7 +29,7 @@ public class Category : AggregateRoot
 
         var categoryId = Guid.NewGuid();
         var category = new Category(categoryId, name.Trim());
-        
+
         category.AddDomainEvent(new CategoryCreatedEvent(categoryId, name.Trim()));
 
         return category;
@@ -55,7 +55,7 @@ public class Category : AggregateRoot
     }
 
     // EF Core constructor
-    private Category() : base(Guid.NewGuid()) 
+    private Category() : base(Guid.NewGuid())
     {
         Name = null!;
     }

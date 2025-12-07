@@ -12,7 +12,7 @@ public class UpdateProductCommandHandler : IRequestHandler<UpdateProductCommand,
     public UpdateProductCommandHandler(IProductService productService)
     {
         _productService = productService;
-    }   
+    }
     public async Task<GetProductDto?> Handle(UpdateProductCommand request, CancellationToken cancellationToken)
     {
         var success = await _productService.UpdateAsync(request.Id, request.Dto);

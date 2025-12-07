@@ -20,7 +20,7 @@ public class Brand : AggregateRoot
 
         var id = Guid.NewGuid();
         var brand = new Brand(id, name, description);
-        
+
         // You might want to add a domain event here like BrandCreatedEvent
         // brand.AddDomainEvent(new BrandCreatedEvent(id, name));
 
@@ -37,7 +37,7 @@ public class Brand : AggregateRoot
     }
 
     // EF Core constructor
-    private Brand() : base(Guid.NewGuid()) 
+    private Brand() : base(Guid.NewGuid())
     {
         Name = null!;
         Description = null!;
